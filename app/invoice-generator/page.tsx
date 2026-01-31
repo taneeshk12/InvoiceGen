@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 
-export default function InvoiceGeneratorPage() {
+function InvoiceGeneratorContent() {
   const { invoice, customization, loadInvoice } = useInvoiceStore();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -241,5 +241,20 @@ export default function InvoiceGeneratorPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function InvoiceGeneratorPage() {
+  return (
+    <React.Suspense fallback={
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <FileText className="h-12 w-12 text-primary animate-pulse" />
+          <p className="text-muted-foreground animate-pulse font-medium">Loading Editor...</p>
+        </div>
+      </div>
+    }>
+      <InvoiceGeneratorContent />
+    </React.Suspense>
   );
 }
