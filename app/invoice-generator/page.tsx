@@ -28,10 +28,13 @@ export default function InvoiceGeneratorPage() {
   const [zoomLevel, setZoomLevel] = React.useState(1);
   const [isResizing, setIsResizing] = React.useState(false);
   const [isSharing, setIsSharing] = React.useState(false);
+  const setTemplate = useInvoiceStore((state) => state.setTemplate);
 
-  // Handle Shared Link Data
+  // Handle Shared Link Data and Template Selection from Home
   React.useEffect(() => {
     const data = searchParams.get('data');
+    const templateParam = searchParams.get('template');
+
     if (data) {
       try {
         const decodedData = JSON.parse(atob(data));
@@ -42,8 +45,15 @@ export default function InvoiceGeneratorPage() {
       } catch (e) {
         console.error('Failed to decode shared data', e);
       }
+    } else if (templateParam) {
+      const validTemplates = ['professional', 'modern', 'minimal', 'custom'];
+      if (validTemplates.includes(templateParam)) {
+        setTemplate(templateParam as any);
+        // Clear param after setting
+        router.replace('/invoice-generator');
+      }
     }
-  }, [searchParams, loadInvoice, router]);
+  }, [searchParams, loadInvoice, router, setTemplate]);
 
   const handleShare = async () => {
     setIsSharing(true);

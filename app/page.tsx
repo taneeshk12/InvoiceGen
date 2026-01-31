@@ -13,7 +13,10 @@ import {
   Palette, 
   CheckCircle2, 
   MousePointer2,
-  Share2
+  Share2,
+  Brush,
+  Type,
+  Layout
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -163,6 +166,94 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Customization Preview Section */}
+      <section className="bg-slate-900 text-white py-32 overflow-hidden">
+        <div className="container mx-auto px-6">
+          <div className="flex flex-col lg:flex-row items-center gap-20">
+            <div className="lg:w-1/2 space-y-8">
+              <div className="inline-flex items-center gap-2 bg-primary/20 text-primary px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest">
+                <Brush className="h-4 w-4" /> Full Control
+              </div>
+              <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-[1.1]">
+                Every detail, <br />
+                <span className="text-primary">Fully Customizable.</span>
+              </h2>
+              <p className="text-xl text-slate-400 max-w-lg">
+                Move beyond static templates. Our "Custom" engine allows you to build your own executive brand identity with deep-level design controls.
+              </p>
+              
+              <div className="grid sm:grid-cols-2 gap-6">
+                {[
+                  { icon: <Type className="h-5 w-5" />, title: "Typography Control", desc: "Adjust font sizes, weights, and letter spacing for body and headers." },
+                  { icon: <Palette className="h-5 w-5" />, title: "Brand Identity", desc: "Custom color palettes, logo positioning, and dynamic watermarks." },
+                  { icon: <Layout className="h-5 w-5" />, title: "Grid Spacing", desc: "Control padding and density to fit more or less data on a single A4 page." },
+                  { icon: <Settings className="h-5 w-5" />, title: "Global Settings", desc: "Apply design changes once, and they persist across all your generated invoices." },
+                ].map((item, i) => (
+                  <div key={i} className="space-y-2">
+                    <div className="text-primary">{item.icon}</div>
+                    <h3 className="font-bold">{item.title}</h3>
+                    <p className="text-sm text-slate-500">{item.desc}</p>
+                  </div>
+                ))}
+              </div>
+
+              <Link href="/invoice-generator?template=custom">
+                <Button size="lg" className="mt-8 h-14 px-10 rounded-2xl bg-white text-black hover:bg-slate-200">
+                  Try Custom Designer <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
+
+            <div className="lg:w-1/2 relative">
+               <div className="bg-gradient-to-tr from-primary/40 to-blue-600/40 absolute inset-0 blur-3xl opacity-30 rounded-full" />
+               <div className="relative bg-slate-800 rounded-3xl border border-slate-700 p-8 shadow-2xl">
+                  {/* Mock Slider Controls */}
+                  <div className="space-y-6">
+                    <div className="space-y-3">
+                      <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-slate-500">
+                        <span>Overall Text Size</span>
+                        <span className="text-primary">14px</span>
+                      </div>
+                      <div className="h-1.5 w-full bg-slate-700 rounded-full overflow-hidden">
+                        <div className="h-full w-2/3 bg-primary" />
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      <div className="flex justify-between text-xs font-bold uppercase tracking-widest text-slate-500">
+                        <span>Watermark Opacity</span>
+                        <span className="text-primary">0.05</span>
+                      </div>
+                      <div className="h-1.5 w-full bg-slate-700 rounded-full overflow-hidden">
+                        <div className="h-full w-1/4 bg-primary" />
+                      </div>
+                    </div>
+                    <div className="pt-4 grid grid-cols-4 gap-4">
+                       {[
+                         'bg-primary',
+                         'bg-blue-500',
+                         'bg-slate-900',
+                         'bg-emerald-500'
+                       ].map((c, i) => (
+                         <div key={i} className={`h-10 rounded-xl ${c} border-2 border-slate-700 hover:border-white cursor-pointer transition-all`} />
+                       ))}
+                    </div>
+                  </div>
+                  
+                  {/* Floating Preview Card */}
+                  <div className="mt-8 bg-white dark:bg-slate-950 p-6 rounded-2xl shadow-xl transform rotate-1 translate-x-4 border border-slate-100 dark:border-slate-800">
+                     <div className="h-4 w-1/3 bg-slate-100 dark:bg-slate-900 rounded mb-4" />
+                     <div className="space-y-2">
+                       <div className="h-2 w-full bg-slate-50 dark:bg-slate-900/50 rounded" />
+                       <div className="h-2 w-full bg-slate-50 dark:bg-slate-900/50 rounded" />
+                       <div className="h-2 w-2/3 bg-slate-50 dark:bg-slate-900/50 rounded" />
+                     </div>
+                  </div>
+               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Templates Section */}
       <section id="templates" className="bg-slate-50 dark:bg-slate-900/20 py-32">
         <div className="container mx-auto px-6">
@@ -257,7 +348,7 @@ export default function HomePage() {
                      <div className="absolute inset-0 bg-gradient-to-br from-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                      <div className="bg-white dark:bg-slate-950 shadow-2xl rounded-sm h-full w-full transform group-hover:scale-[1.02] group-hover:-translate-y-1 transition-all duration-500 overflow-hidden flex flex-col p-6 border dark:border-slate-800">
                         {tmpl.preview}
-                        <div className="mt-auto pt-6 flex justify-center"></div>
+                        <div className="mt-auto pt-6 flex justify-center">
                            <div className="px-3 py-1 bg-primary/10 text-primary text-[10px] font-bold rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
                               USE THIS TEMPLATE
                            </div>
