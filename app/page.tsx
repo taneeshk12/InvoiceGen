@@ -255,14 +255,14 @@ export default function HomePage() {
       </section>
 
       {/* Templates Section */}
-      <section id="templates" className="bg-slate-50 dark:bg-slate-900/20 py-32">
+      <section id="templates" className="bg-slate-50 dark:bg-slate-900/20 py-20 md:py-32">
         <div className="container mx-auto px-6">
-          <div className="text-center max-w-3xl mx-auto mb-20">
-            <h2 className="text-4xl md:text-5xl font-black mb-6">Choose Your Executive Look.</h2>
-            <p className="text-xl text-slate-500">Every template is optimized for professional correspondence, tax compliance, and pixel-perfect PDF export.</p>
+          <div className="text-center max-w-3xl mx-auto mb-12 md:mb-20">
+            <h2 className="text-3xl md:text-5xl font-black mb-4 md:mb-6 leading-tight">Choose Your Executive Look.</h2>
+            <p className="text-lg md:text-xl text-slate-500">Every template is optimized for professional correspondence, tax compliance, and pixel-perfect PDF export.</p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {[
               { 
                 id: 'professional', 

@@ -136,7 +136,9 @@ function InvoiceGeneratorContent() {
   // Calculate zoom level safely
   const effectivePreviewWidth = windowWidth >= 1024 ? previewWidth : windowWidth;
   const availableWidth = effectivePreviewWidth - (windowWidth < 768 ? 32 : 48);
-  const calculatedZoom = (availableWidth / 794) * (windowWidth < 768 ? 0.95 : zoomLevel);
+  // Allow user's zoomLevel to influence mobile as well, starting from a baseline that fits but allowing scale-up
+  const mobileBaseline = (availableWidth / 794) * 0.95;
+  const calculatedZoom = windowWidth < 1024 ? (mobileBaseline * zoomLevel) : ((availableWidth / 794) * zoomLevel);
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
@@ -256,32 +258,34 @@ function InvoiceGeneratorContent() {
           >
             {/* Wrapper for scrolling content inside the preview tab */}
             <div className="w-full space-y-4 pb-48 lg:pb-0">
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center justify-between mb-2 px-1">
                 <div className="flex flex-col">
                   <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Live Preview</span>
-                  <span className="text-[10px] text-slate-500">{windowWidth < 768 ? 'Optimized for Mobile' : `${Math.round(zoomLevel * 100)}% scale`}</span>
+                  <span className="text-[10px] text-slate-500">
+                    {Math.round(zoomLevel * 100)}% scale
+                  </span>
                 </div>
                 
-                {/* Zoom Controls (Visible on Desktop) */}
-                <div className="hidden sm:flex items-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-1 shadow-sm">
+                {/* Zoom Controls (Now visible on all screens) */}
+                <div className="flex items-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-1 shadow-sm">
                   <Button 
                     variant="ghost" 
                     size="icon" 
-                    className="h-7 w-7"
-                    onClick={() => setZoomLevel(Math.max(0.5, zoomLevel - 0.1))}
+                    className="h-8 w-8"
+                    onClick={() => setZoomLevel(Math.max(0.3, zoomLevel - 0.1))}
                   >
-                    <Minus className="h-3 w-3" />
+                    <Minus className="h-4 w-4" />
                   </Button>
-                  <div className="w-10 text-[10px] text-center font-mono font-bold">
+                  <div className="w-12 text-xs text-center font-mono font-bold">
                     {Math.round(zoomLevel * 100)}%
                   </div>
                   <Button 
                     variant="ghost" 
                     size="icon" 
-                    className="h-7 w-7"
-                    onClick={() => setZoomLevel(Math.min(2, zoomLevel + 0.1))}
+                    className="h-8 w-8"
+                    onClick={() => setZoomLevel(Math.min(3, zoomLevel + 0.1))}
                   >
-                    <Plus className="h-3 w-3" />
+                    <Plus className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
