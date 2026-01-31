@@ -27,7 +27,7 @@ export function InvoiceForm() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-40"> {/* Added significant bottom padding here */}
       {/* Company Details */}
       <Card>
         <CardHeader>

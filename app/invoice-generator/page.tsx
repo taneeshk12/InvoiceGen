@@ -16,9 +16,14 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 
 function InvoiceGeneratorContent() {
-  const { invoice, customization, loadInvoice } = useInvoiceStore();
+  const { invoice, customization, loadInvoice, setTemplate } = useInvoiceStore();
   const searchParams = useSearchParams();
   const router = useRouter();
+  
+  // Initialize tab from URL if present
+  const initialTab = (searchParams.get('tab') as 'form' | 'preview') || 'form';
+  const [activeTab, setActiveTab] = React.useState<'form' | 'preview'>(initialTab);
+
   const isCustomTemplate = invoice.template === 'custom';
   const showBasicCustomization = invoice.template === 'professional' || invoice.template === 'modern' || invoice.template === 'minimal';
   const hasSidePanel = isCustomTemplate || showBasicCustomization;
@@ -28,7 +33,7 @@ function InvoiceGeneratorContent() {
   const [zoomLevel, setZoomLevel] = React.useState(1);
   const [isResizing, setIsResizing] = React.useState(false);
   const [isSharing, setIsSharing] = React.useState(false);
-  const setTemplate = useInvoiceStore((state) => state.setTemplate);
+  const [windowWidth, setWindowWidth] = React.useState(1200);
 
   // Handle Shared Link Data and Template Selection from Home
   React.useEffect(() => {
@@ -55,20 +60,32 @@ function InvoiceGeneratorContent() {
     }
   }, [searchParams, loadInvoice, router, setTemplate]);
 
+  // Handle Resize and Window Detection
+  React.useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      setWindowWidth(width);
+      if (width < 1024) {
+        setPreviewWidth(width);
+      } else if (previewWidth > width * 0.6) {
+        setPreviewWidth(Math.floor(width * 0.4));
+      }
+    };
+    
+    handleResize(); // Initial call
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [previewWidth]);
+
   const handleShare = async () => {
     setIsSharing(true);
     try {
-      const shareData = {
-        invoice,
-        customization
-      };
+      const shareData = { invoice, customization };
       const encodedData = btoa(JSON.stringify(shareData));
       const shareUrl = `${window.location.origin}${window.location.pathname}?data=${encodedData}`;
       
       await navigator.clipboard.writeText(shareUrl);
       toast.success('Share link copied to clipboard!');
-      setIsSharing(false);
-      
       setTimeout(() => setIsSharing(false), 2000);
     } catch (err) {
       toast.error('Failed to create share link');
@@ -89,7 +106,7 @@ function InvoiceGeneratorContent() {
     (e: MouseEvent) => {
       if (isResizing) {
         const newWidth = window.innerWidth - e.clientX;
-        if (newWidth >= 300 && newWidth <= window.innerWidth * 0.6) {
+        if (newWidth >= 300 && newWidth <= window.innerWidth * 0.7) {
           setPreviewWidth(newWidth);
         }
       }
@@ -98,13 +115,28 @@ function InvoiceGeneratorContent() {
   );
 
   React.useEffect(() => {
-    window.addEventListener('mousemove', resize);
-    window.addEventListener('mouseup', stopResizing);
+    if (isResizing) {
+      window.addEventListener('mousemove', resize);
+      window.addEventListener('mouseup', stopResizing);
+    }
     return () => {
       window.removeEventListener('mousemove', resize);
       window.removeEventListener('mouseup', stopResizing);
     };
-  }, [resize, stopResizing]);
+  }, [isResizing, resize, stopResizing]);
+
+  // Sync tab state with URL
+  const handleTabChange = (tab: 'form' | 'preview') => {
+    setActiveTab(tab);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('tab', tab);
+    router.replace(`/invoice-generator?${params.toString()}`, { scroll: false });
+  };
+
+  // Calculate zoom level safely
+  const effectivePreviewWidth = windowWidth >= 1024 ? previewWidth : windowWidth;
+  const availableWidth = effectivePreviewWidth - (windowWidth < 768 ? 32 : 48);
+  const calculatedZoom = (availableWidth / 794) * (windowWidth < 768 ? 0.95 : zoomLevel);
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
@@ -118,25 +150,25 @@ function InvoiceGeneratorContent() {
               </div>
               <span className="text-xl font-extrabold tracking-tight">Invoice<span className="text-primary font-medium">Gen</span></span>
             </Link>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 md:gap-3">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleShare}
-                className="gap-2 border-primary/20 hover:bg-primary/5"
+                className="gap-2 border-primary/20 hover:bg-primary/5 h-8 md:h-10 px-2 md:px-4"
               >
                 {isSharing ? <Check className="h-4 w-4 text-green-500" /> : <Share2 className="h-4 w-4" />}
-                Share Link
+                <span className="hidden xs:inline">Share Link</span>
               </Button>
-              <div className="h-6 w-px bg-slate-200 dark:bg-slate-800 mx-1" />
+              <div className="h-6 w-px bg-slate-200 dark:bg-slate-800 mx-1 hidden md:block" />
               <Button
                 variant={showDesignPanel ? "secondary" : "outline"}
                 size="sm"
                 onClick={() => setShowDesignPanel(!showDesignPanel)}
-                className="gap-2"
+                className="gap-2 h-8 md:h-10 px-2 md:px-4"
               >
                 <Settings2 className="h-4 w-4" />
-                {showDesignPanel ? "Hide Design" : "Design Settings"}
+                <span className="hidden xs:inline">{showDesignPanel ? "Hide Design" : "Design"}</span>
               </Button>
               <ThemeToggle />
             </div>
@@ -145,25 +177,43 @@ function InvoiceGeneratorContent() {
       </header>
 
       {/* Main Content */}
-      <main className="px-6 py-8">
-        <div className="mb-8 text-center">
-          <h1 className="text-4xl font-bold mb-2 tracking-tight">Create Professional Invoice</h1>
-          <p className="text-muted-foreground flex items-center justify-center gap-2">
-            Professional design editor for your business documents
+      <main className="px-0 md:px-6 py-4 md:py-8 flex flex-col">
+        <div className="mb-4 md:mb-8 text-center px-4">
+          <h1 className="text-xl md:text-4xl font-bold mb-1 tracking-tight">Create Professional Invoice</h1>
+          <p className="text-sm md:text-base text-muted-foreground">
+            Professional high-fidelity editor for business documents
           </p>
         </div>
 
         {/* Template Selector */}
-        <div className="mb-8 max-w-6xl mx-auto">
+        <div className="mb-6 md:mb-8 max-w-6xl mx-auto overflow-x-auto pb-2 scrollbar-hide">
           <TemplateSelector />
         </div>
 
+        {/* Mobile Tab Switcher */}
+        <div className="lg:hidden flex mb-4 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl mx-4 max-w-sm self-center w-[calc(100%-2rem)] shadow-sm">
+           <Button 
+            variant={activeTab === 'form' ? 'secondary' : 'ghost'} 
+            className={`flex-1 rounded-lg h-9 text-xs font-bold transition-all ${activeTab === 'form' ? 'bg-white dark:bg-slate-700 shadow-sm text-primary' : 'text-muted-foreground'}`}
+            onClick={() => handleTabChange('form')}
+           >
+             Editor
+           </Button>
+           <Button 
+            variant={activeTab === 'preview' ? 'secondary' : 'ghost'} 
+            className={`flex-1 rounded-lg h-9 text-xs font-bold transition-all ${activeTab === 'preview' ? 'bg-white dark:bg-slate-700 shadow-sm text-primary' : 'text-muted-foreground'}`}
+            onClick={() => handleTabChange('preview')}
+           >
+             Preview
+           </Button>
+        </div>
+
         {/* Dynamic Adjustable Layout */}
-        <div className="flex gap-0 h-[calc(100vh-14rem)] relative overflow-hidden bg-slate-50/50 dark:bg-slate-950/20 rounded-3xl border border-slate-200 dark:border-slate-800">
+        <div className="flex flex-col lg:flex-row gap-0 h-auto lg:h-[calc(100vh-14rem)] flex-grow relative bg-slate-50/50 dark:bg-slate-950/20 md:rounded-3xl border-t border-b md:border border-slate-200 dark:border-slate-800 overflow-visible">
           {/* Left: Customization Side Panel */}
           {hasSidePanel && showDesignPanel && (
-            <div className="w-[300px] flex-shrink-0 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 z-40 animate-in slide-in-from-left duration-300">
-              <div className="h-full relative">
+            <div className="fixed inset-y-0 left-0 w-[300px] lg:relative lg:inset-auto lg:w-[300px] flex-shrink-0 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 z-[60] lg:z-10 animate-in slide-in-from-left duration-300 shadow-2xl lg:shadow-none">
+              <div className="h-full relative overflow-y-auto">
                 <Button 
                   variant="ghost" 
                   size="icon" 
@@ -178,16 +228,16 @@ function InvoiceGeneratorContent() {
           )}
 
           {/* Middle: Main Form Area */}
-          <div className="flex-grow overflow-y-auto custom-scrollbar bg-white dark:bg-slate-900 shadow-inner p-8">
+          <div className={`flex-grow lg:overflow-y-auto custom-scrollbar bg-white dark:bg-slate-900 shadow-inner p-4 md:p-8 ${activeTab !== 'form' && windowWidth < 1024 ? 'hidden' : 'block'}`}>
             <div className="max-w-3xl mx-auto space-y-6">
               <InvoiceForm />
             </div>
           </div>
 
-          {/* Resize Handle: Drag Button */}
+          {/* Resize Handle */}
           <div
             onMouseDown={startResizing}
-            className={`w-2 hover:w-3 cursor-col-resize flex items-center justify-center group transition-all z-30 ${
+            className={`hidden lg:flex w-2 hover:w-3 cursor-col-resize items-center justify-center group transition-all z-30 ${
               isResizing ? 'bg-primary' : 'bg-slate-200 dark:bg-slate-800'
             }`}
           >
@@ -199,20 +249,21 @@ function InvoiceGeneratorContent() {
           {/* Right: Live Preview & Actions */}
           <div 
             style={{ 
-              width: `${previewWidth}px`,
-              '--preview-zoom': ((previewWidth - 48) / 794) * zoomLevel
+              width: windowWidth >= 1024 ? `${previewWidth}px` : '100%',
+              '--preview-zoom': calculatedZoom
             } as React.CSSProperties}
-            className="flex-shrink-0 overflow-y-auto custom-scrollbar bg-slate-100 dark:bg-slate-950 p-6 flex flex-col items-center gap-6"
+            className={`flex-shrink-0 lg:overflow-y-auto custom-scrollbar bg-slate-100 dark:bg-slate-950 p-4 md:p-6 flex flex-col items-center gap-6 ${activeTab !== 'preview' && windowWidth < 1024 ? 'hidden' : 'flex'}`}
           >
-            <div className="w-full space-y-4">
+            {/* Wrapper for scrolling content inside the preview tab */}
+            <div className="w-full space-y-4 pb-48 lg:pb-0">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex flex-col">
                   <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Live Preview</span>
-                  <span className="text-[10px] text-slate-500">{Math.round(zoomLevel * 100)}% scale</span>
+                  <span className="text-[10px] text-slate-500">{windowWidth < 768 ? 'Optimized for Mobile' : `${Math.round(zoomLevel * 100)}% scale`}</span>
                 </div>
                 
-                {/* Zoom Controls */}
-                <div className="flex items-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-1 shadow-sm">
+                {/* Zoom Controls (Visible on Desktop) */}
+                <div className="hidden sm:flex items-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-1 shadow-sm">
                   <Button 
                     variant="ghost" 
                     size="icon" 
@@ -234,8 +285,12 @@ function InvoiceGeneratorContent() {
                   </Button>
                 </div>
               </div>
-              <InvoicePreview />
-              <InvoiceActions />
+              <div className="flex justify-center w-full">
+                <InvoicePreview />
+              </div>
+              <div className="mt-8">
+                <InvoiceActions />
+              </div>
             </div>
           </div>
         </div>
@@ -248,9 +303,9 @@ export default function InvoiceGeneratorPage() {
   return (
     <React.Suspense fallback={
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
+        <div className="flex flex-col items-center gap-4 text-center">
           <FileText className="h-12 w-12 text-primary animate-pulse" />
-          <p className="text-muted-foreground animate-pulse font-medium">Loading Editor...</p>
+          <p className="text-muted-foreground animate-pulse font-medium">Loading Professional Editor...</p>
         </div>
       </div>
     }>

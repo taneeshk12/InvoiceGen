@@ -390,24 +390,25 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="border-t bg-slate-50 dark:bg-slate-900/50 py-16">
         <div className="container mx-auto px-6">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-12">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-8">
             <div className="flex flex-col items-center md:items-start space-y-4">
               <div className="flex items-center space-x-2">
-                <FileText className="h-5 w-5 text-primary" />
+                <div className="bg-primary p-1.5 rounded-lg">
+                  <FileText className="h-4 w-4 text-primary-foreground" />
+                </div>
                 <span className="text-lg font-bold tracking-tighter">InvoiceGen</span>
               </div>
-              <p className="text-sm text-slate-500">© 2026 InvoiceGen. Built with precision by ctrlaltbuild.in</p>
+              <p className="text-sm text-slate-500">
+                © {new Date().getFullYear()} InvoiceGen. Professional open-source billing for everyone.
+              </p>
             </div>
             
-            <div className="flex flex-col items-center gap-6">
-              <div className="flex flex-wrap justify-center gap-6 text-sm font-medium text-slate-400">
+            <div className="flex flex-col items-center md:items-end gap-6">
+              <div className="flex flex-wrap justify-center md:justify-end gap-6 text-sm font-medium text-slate-500 dark:text-slate-400">
                 <Link href="/blog/how-to-create-professional-invoices" className="hover:text-primary transition-colors">Professional Guide</Link>
                 <Link href="/blog/benefits-of-local-first-invoice-generation" className="hover:text-primary transition-colors">Privacy First</Link>
-                <Link href="/blog/freelance-billing-guide-2026" className="hover:text-primary transition-colors">Freelance Guide 2026</Link>
+                <Link href="/blog/freelance-billing-guide-2026" className="hover:text-primary transition-colors">2026 Trends</Link>
               </div>
-              <a href="mailto:team@ctrlaltbuild.in" className="text-sm font-bold bg-white dark:bg-slate-900 px-6 py-2.5 rounded-full shadow-md border hover:border-primary hover:text-primary transition-all">
-                team@ctrlaltbuild.in
-              </a>
             </div>
           </div>
         </div>

@@ -8,7 +8,7 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://invoicegen.ctrlaltbuild.in'),
+  metadataBase: new URL('https://invoicegen.org'),
   title: {
     default: 'InvoiceGen | #1 High-Fidelity Executive Invoice Generator',
     template: '%s | InvoiceGen',
@@ -23,15 +23,14 @@ export const metadata: Metadata = {
     'high fidelity invoice editor',
     'GST compliant invoice maker',
     'executive layout invoice',
-    'custom brand invoice tool',
-    'ctrlaltbuild'
+    'custom brand invoice tool'
   ],
-  authors: [{ name: 'ctrlaltbuild' }],
-  creator: 'ctrlaltbuild',
+  authors: [{ name: 'InvoiceGen Team' }],
+  creator: 'InvoiceGen',
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://invoicegen.ctrlaltbuild.in',
+    url: 'https://invoicegen.org',
     title: 'InvoiceGen | Professional High-Fidelity Invoices',
     description: 'Design beautiful, tax-compliant invoices with an executive-grade real-time editor.',
     siteName: 'InvoiceGen',
@@ -48,14 +47,14 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'InvoiceGen | Executive Invoice Editor',
     description: 'Design beautiful invoices with a real-time high-fidelity editor.',
-    creator: '@ctrlaltbuild',
+    creator: '@invoicegen',
     images: ['/og-image.png'],
   },
   verification: {
     google: 'your-google-verification-code', // Recommended to add this
   },
   alternates: {
-    canonical: 'https://invoicegen.ctrlaltbuild.in',
+    canonical: 'https://invoicegen.org',
   },
   other: {
     'apple-mobile-web-app-title': 'InvoiceGen',

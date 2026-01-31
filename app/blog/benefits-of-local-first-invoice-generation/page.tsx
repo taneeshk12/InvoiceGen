@@ -79,6 +79,11 @@ export default function BlogPost() {
           </div>
         </div>
       </div>
+      <footer className="border-t py-12 bg-slate-50 dark:bg-slate-900/50">
+        <div className="container mx-auto px-6 text-center">
+            <p className="text-sm text-slate-500">© {new Date().getFullYear()} InvoiceGen. Privacy-First Professional Invoicing.</p>
+        </div>
+      </footer>
     </article>
   );
 }
