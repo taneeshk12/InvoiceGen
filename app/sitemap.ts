@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import { getAllNicheSlugs } from '@/lib/niches';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://invoicegen.ctrlaltbuild.in/';
   
   // Static pages
   const staticPages: MetadataRoute.Sitemap = [
