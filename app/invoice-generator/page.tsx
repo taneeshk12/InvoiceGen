@@ -9,6 +9,7 @@ import { CustomizationPanel } from '@/features/invoice/components/customization-
 import { BasicCustomizationPanel } from './../../features/invoice/components/basic-customization-panel';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { useInvoiceStore } from '@/lib/store/invoice-store';
+import { getNicheBySlug } from '@/lib/niches';
 import Link from 'next/link';
 import { FileText, GripVertical, Settings2, X, Plus, Minus, Share2, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -16,7 +17,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 
 function InvoiceGeneratorContent() {
-  const { invoice, customization, loadInvoice, setTemplate } = useInvoiceStore();
+  const { invoice, customization, loadInvoice, setTemplate, addItem, updateItem, setNotes } = useInvoiceStore();
   const searchParams = useSearchParams();
   const router = useRouter();
   
@@ -39,6 +40,7 @@ function InvoiceGeneratorContent() {
   React.useEffect(() => {
     const data = searchParams.get('data');
     const templateParam = searchParams.get('template');
+    const professionParam = searchParams.get('profession');
 
     if (data) {
       try {
@@ -50,6 +52,50 @@ function InvoiceGeneratorContent() {
       } catch (e) {
         console.error('Failed to decode shared data', e);
       }
+    } else if (professionParam) {
+      // Handle profession pre-fill
+      const nicheData = getNicheBySlug(professionParam);
+      if (nicheData) {
+        // Check if invoice already has items with content
+        const hasExistingItems = invoice.items && invoice.items.some(item => item.name && item.name.trim() !== '');
+        
+        if (!hasExistingItems) {
+          // Pre-fill with common items for this profession
+          const itemsToAdd = nicheData.commonItems.slice(0, 3); // Add first 3 common items
+          
+          // Update first item if it exists and is empty
+          if (invoice.items && invoice.items.length > 0 && !invoice.items[0].name) {
+            updateItem(0, {
+              name: itemsToAdd[0],
+              quantity: 1,
+              price: 0,
+            });
+            
+            // Add additional items
+            itemsToAdd.slice(1).forEach((itemName) => {
+              addItem();
+              setTimeout(() => {
+                const currentItems = useInvoiceStore.getState().invoice.items || [];
+                const lastIndex = currentItems.length - 1;
+                updateItem(lastIndex, {
+                  name: itemName,
+                  quantity: 1,
+                  price: 0,
+                });
+              }, 50);
+            });
+          }
+          
+          // Add helpful notes
+          const notesText = `Invoice for ${nicheData.profession} services\n\nCommon services include:\n${nicheData.commonItems.slice(0, 5).join('\n')}`;
+          setNotes(notesText);
+          
+          toast.success(`Invoice template loaded for ${nicheData.title}s!`);
+        }
+        
+        // Clear param after loading
+        router.replace('/invoice-generator');
+      }
     } else if (templateParam) {
       const validTemplates = ['professional', 'modern', 'minimal', 'custom'];
       if (validTemplates.includes(templateParam)) {
@@ -58,7 +104,7 @@ function InvoiceGeneratorContent() {
         router.replace('/invoice-generator');
       }
     }
-  }, [searchParams, loadInvoice, router, setTemplate]);
+  }, [searchParams, loadInvoice, router, setTemplate, addItem, updateItem, setNotes, invoice.items]);
 
   // Handle Resize and Window Detection
   React.useEffect(() => {

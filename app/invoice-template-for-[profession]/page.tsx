@@ -1,9 +1,7 @@
-'use client';
-
 import * as React from 'react';
-import { notFound, useParams } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { getNicheBySlug, getRelatedNiches } from '@/lib/niches';
+import { getNicheBySlug, getRelatedNiches, getAllNicheSlugs } from '@/lib/niches';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -22,9 +20,22 @@ import {
   Star
 } from 'lucide-react';
 
-export default function NicheLandingPage() {
-  const params = useParams();
-  const profession = params.profession as string;
+interface PageProps {
+  params: {
+    profession: string;
+  };
+}
+
+export async function generateStaticParams() {
+  const slugs = getAllNicheSlugs();
+  
+  return slugs.map((slug) => ({
+    profession: slug,
+  }));
+}
+
+export default function NicheLandingPage({ params }: PageProps) {
+  const profession = params.profession;
   
   const nicheData = getNicheBySlug(profession);
   
@@ -51,7 +62,7 @@ export default function NicheLandingPage() {
             
             <div className="flex items-center gap-3">
               <ThemeToggle />
-              <Link href="/invoice-generator">
+              <Link href={`/invoice-generator?profession=${profession}`}>
                 <Button size="lg" className="shadow-lg shadow-primary/25 font-semibold">
                   Create Invoice
                   <ArrowRight className="ml-2 h-4 w-4" />
@@ -81,7 +92,7 @@ export default function NicheLandingPage() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link href="/invoice-generator">
+              <Link href={`/invoice-generator?profession=${profession}`}>
                 <Button size="lg" className="text-lg px-8 py-6 shadow-2xl shadow-primary/30 hover:scale-105 transition-transform font-bold">
                   <FileText className="mr-2 h-5 w-5" />
                   Create Your Invoice Now
@@ -319,7 +330,7 @@ export default function NicheLandingPage() {
             <p className="text-xl text-muted-foreground mb-8">
               Join thousands of {nicheData.profession.toLowerCase()} professionals who trust our invoice generator
             </p>
-            <Link href="/invoice-generator">
+            <Link href={`/invoice-generator?profession=${profession}`}>
               <Button size="lg" className="text-lg px-12 py-6 shadow-2xl shadow-primary/30 hover:scale-105 transition-transform font-bold">
                 <FileText className="mr-2 h-5 w-5" />
                 Start Creating - It's Free
