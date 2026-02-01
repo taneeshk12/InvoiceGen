@@ -27,6 +27,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-white dark:bg-slate-950 transition-colors duration-500">
       {/* Header */}
       <header className="border-b bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl sticky top-0 z-50">
+      <meta name="google-site-verification" content="exfRb_-OXPZG0djFeU7Mukv0SIMoxSnsUMuKYLNzSGc" />
         <div className="container mx-auto px-6 py-4">
           <nav className="flex items-center justify-between">
             <Link href="/" className="flex items-center space-x-2 group">
