@@ -13,6 +13,12 @@ const nextConfig = {
       bodySizeLimit: '2mb',
     },
   },
+  // Enable static optimization for better SEO
+  output: 'standalone',
+  // Generate static pages at build time
+  generateBuildId: async () => {
+    return 'invoice-gen-build'
+  },
 }
 
 module.exports = nextConfig

@@ -40,7 +40,7 @@ export default function HomePage() {
             
             <div className="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-600 dark:text-slate-400">
               <Link href="#features" className="hover:text-primary transition-colors">Features</Link>
-              <Link href="#templates" className="hover:text-primary transition-colors">Templates</Link>
+              <Link href="/templates" className="hover:text-primary transition-colors">Templates</Link>
               <Link href="/blog/how-to-create-professional-invoices" className="hover:text-primary transition-colors">Guides</Link>
               <Link href="/invoice-generator" className="text-primary font-bold">Try Editor</Link>
             </div>
