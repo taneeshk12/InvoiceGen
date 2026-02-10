@@ -6,11 +6,25 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatCurrency(amount: number, currency: string = 'USD'): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency,
-    minimumFractionDigits: 2,
-  }).format(amount);
+  // If currency is just a symbol (like $ or ₹) and not a 3-letter ISO code, 
+  // or if it's something custom the user typed, we check if it's a valid ISO code.
+  const isIsoCode = /^[A-Z]{3}$/.test(currency);
+
+  if (isIsoCode) {
+    try {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency,
+        minimumFractionDigits: 2,
+      }).format(amount);
+    } catch (e) {
+      // Fallback if ISO code is invalid or not supported
+      return `${currency}${amount.toFixed(2)}`;
+    }
+  }
+
+  // If it's a symbol or custom text, just prepend it
+  return `${currency}${amount.toFixed(2)}`;
 }
 
 export function formatDate(date: string | Date, format: string = 'medium'): string {

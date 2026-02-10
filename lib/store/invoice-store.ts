@@ -20,6 +20,7 @@ interface InvoiceStore {
   removeItem: (index: number) => void;
   setInvoiceDate: (date: string) => void;
   setDueDate: (date: string) => void;
+  setCurrency: (currency: string) => void;
   setDiscount: (amount: number) => void;
   setNotes: (notes: string) => void;
   setTerms: (terms: string) => void;
@@ -42,6 +43,7 @@ const defaultItem: InvoiceItem = {
 
 const initialInvoice: Partial<Invoice> = {
   invoiceNumber: generateInvoiceNumber(),
+  currency: 'USD',
   company: {
     name: '',
     email: '',
@@ -135,15 +137,21 @@ export const useInvoiceStore = create<InvoiceStore>()(
         }));
       },
 
-      setDueDate: (date) => {
+      setDueDate: (dueDate) => {
         set((state) => ({
-          invoice: { ...state.invoice, dueDate: date },
+          invoice: { ...state.invoice, dueDate },
         }));
       },
 
-      setDiscount: (amount) => {
+      setCurrency: (currency) => {
         set((state) => ({
-          invoice: { ...state.invoice, discountAmount: amount },
+          invoice: { ...state.invoice, currency },
+        }));
+      },
+
+      setDiscount: (discountAmount) => {
+        set((state) => ({
+          invoice: { ...state.invoice, discountAmount },
         }));
         get().calculateTotals();
       },

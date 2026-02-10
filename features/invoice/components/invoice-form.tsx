@@ -10,7 +10,7 @@ import { Plus, X, Upload } from 'lucide-react';
 import { useState } from 'react';
 
 export function InvoiceForm() {
-  const { invoice, setCompanyDetails, setClientDetails, addItem, updateItem, removeItem, setInvoiceDate, setDueDate, setDiscount, setNotes, setTerms } = useInvoiceStore();
+  const { invoice, setCompanyDetails, setClientDetails, addItem, updateItem, removeItem, setInvoiceDate, setDueDate, setCurrency, setDiscount, setNotes, setTerms } = useInvoiceStore();
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -197,6 +197,15 @@ export function InvoiceForm() {
                 onChange={(e) => setDueDate(e.target.value)}
               />
             </div>
+            <div className="col-span-2">
+              <Label htmlFor="currency">Currency Symbol or Code</Label>
+              <Input
+                id="currency"
+                value={invoice.currency || ''}
+                onChange={(e) => setCurrency(e.target.value)}
+                placeholder="$, USD, ₹, etc."
+              />
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -286,7 +295,7 @@ export function InvoiceForm() {
 
               <div className="text-right text-sm">
                 <span className="text-muted-foreground">Amount: </span>
-                <span className="font-semibold">${item.amount.toFixed(2)}</span>
+                <span className="font-semibold">{invoice.currency || '$'}{item.amount.toFixed(2)}</span>
               </div>
             </div>
           ))}

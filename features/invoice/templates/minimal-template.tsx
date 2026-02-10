@@ -98,25 +98,9 @@ export function MinimalTemplate({ invoice }: TemplateProps) {
                 className="ml-auto mb-4"
               />
             )}
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              {invoice.company?.name}
-            </h2>
-            {invoice.company?.email && (
-              <p className="text-sm text-gray-600">{invoice.company.email}</p>
-            )}
-            {invoice.company?.phone && (
-              <p className="text-sm text-gray-600">{invoice.company.phone}</p>
-            )}
-            {invoice.company?.address && (
-              <p className="text-sm text-gray-600 mt-1 max-w-xs">
-                {invoice.company.address}
-              </p>
-            )}
-            {invoice.company?.gst && (
-              <p className="text-sm text-gray-600 mt-1">
-                GST: {invoice.company.gst}
-              </p>
-            )}
+            <p className="text-4xl font-light tracking-tighter" style={{ color: colors.primary }}>
+              {formatCurrency(invoice.totalAmount || 0, invoice.currency)}
+            </p>
           </div>
         </div>
 
@@ -183,22 +167,17 @@ export function MinimalTemplate({ invoice }: TemplateProps) {
           </thead>
           <tbody>
             {invoice.items?.map((item) => (
-              <tr key={item.id} className="border-b border-gray-200">
-                <td className="py-4">
-                  <div className="font-semibold text-gray-900">{item.name}</div>
-                  {item.description && (
-                    <div className="text-sm text-gray-600 mt-1">
-                      {item.description}
-                    </div>
-                  )}
+              <tr key={item.id} className="border-b" style={{ borderColor: colors.border }}>
+                <td className="py-4 px-2">
+                  <p className="font-medium">{item.name}</p>
+                  <p className="text-xs text-gray-500 whitespace-pre-line">{item.description}</p>
                 </td>
-                <td className="text-right py-4 text-gray-900">{item.quantity}</td>
-                <td className="text-right py-4 text-gray-900">
-                  {formatCurrency(item.price)}
+                <td className="text-right py-4 px-2">{item.quantity}</td>
+                <td className="text-right py-4 px-2">
+                  {formatCurrency(item.price, invoice.currency)}
                 </td>
-                <td className="text-right py-4 text-gray-900">{item.taxRate}%</td>
-                <td className="text-right py-4 font-semibold text-gray-900">
-                  {formatCurrency(item.amount)}
+                <td className="text-right py-4 px-2 font-medium">
+                  {formatCurrency(item.amount, invoice.currency)}
                 </td>
               </tr>
             ))}
@@ -208,24 +187,29 @@ export function MinimalTemplate({ invoice }: TemplateProps) {
 
         {/* Totals */}
         <div className="flex justify-end" style={{ marginBottom: `${customization.sectionSpacing}px` }}>
-        <div className="w-80">
-          <div className="flex justify-between py-2 text-gray-700">
-            <span>Subtotal</span>
-            <span>{formatCurrency(invoice.subtotal || 0)}</span>
+        <div className="w-64 space-y-3">
+          <div className="flex justify-between text-sm">
+            <span className="text-gray-500">Subtotal</span>
+            <span>{formatCurrency(invoice.subtotal || 0, invoice.currency)}</span>
           </div>
-          <div className="flex justify-between py-2 text-gray-700">
-            <span>Tax</span>
-            <span>{formatCurrency(invoice.taxAmount || 0)}</span>
-          </div>
-          {invoice.discountAmount! > 0 && (
-            <div className="flex justify-between py-2 text-gray-700">
-              <span>Discount</span>
-              <span>-{formatCurrency(invoice.discountAmount || 0)}</span>
+          {invoice.taxAmount! > 0 && (
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-500">Tax</span>
+              <span>{formatCurrency(invoice.taxAmount || 0, invoice.currency)}</span>
             </div>
           )}
-          <div className="flex justify-between py-3 border-t-2 border-gray-900 text-lg font-bold text-gray-900">
+          {invoice.discountAmount! > 0 && (
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-500">Discount</span>
+              <span>-{formatCurrency(invoice.discountAmount || 0, invoice.currency)}</span>
+            </div>
+          )}
+          <div 
+            className="flex justify-between pt-3 border-t font-bold text-lg"
+            style={{ borderColor: colors.primary, color: colors.primary }}
+          >
             <span>Total</span>
-            <span>{formatCurrency(invoice.totalAmount || 0)}</span>
+            <span>{formatCurrency(invoice.totalAmount || 0, invoice.currency)}</span>
           </div>
         </div>
       </div>

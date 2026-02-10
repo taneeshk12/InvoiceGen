@@ -123,7 +123,7 @@ export function ModernTemplate({ invoice }: TemplateProps) {
               <div className="text-xs font-bold text-gray-500 mt-2 space-y-1">
                 {invoice.company?.address && <p className="leading-relaxed max-w-[240px] ml-auto uppercase opacity-60 tracking-tighter">{invoice.company.address}</p>}
                 <div className="pt-2 flex flex-col items-end gap-1">
-                  {invoice.company?.email && <span className="text-purple-600 underline underline-offset-4">{invoice.company.email}</span>}
+                  {invoice.company?.email && <span className="text-purple-600 lowercase">{invoice.company.email}</span>}
                   {invoice.company?.phone && <span className="text-pink-500">{invoice.company.phone}</span>}
                 </div>
               </div>
@@ -175,14 +175,14 @@ export function ModernTemplate({ invoice }: TemplateProps) {
             </thead>
             <tbody className="divide-y divide-gray-50">
               {invoice.items?.map((item) => (
-                <tr key={item.id} className="group transition-all">
-                  <td className="py-8 px-2">
-                    <div className="font-black text-gray-900 text-lg tracking-tight uppercase group-hover:text-purple-600 transition-colors">{item.name}</div>
-                    {item.description && <div className="text-[10px] font-bold text-gray-400 mt-1 max-w-sm uppercase leading-tight">{item.description}</div>}
+                <tr key={item.id} className="border-b border-gray-100 hover:bg-gray-50/50 transition-colors">
+                  <td className="py-8 px-2 max-w-sm">
+                    <p className="font-black text-gray-900 text-lg leading-tight mb-2 tracking-tight">{item.name}</p>
+                    <p className="text-sm text-gray-500 line-clamp-2 leading-relaxed">{item.description}</p>
                   </td>
-                  <td className="text-center py-8 px-2 text-sm font-black text-gray-900 leading-none">{item.quantity}</td>
-                  <td className="text-right py-8 px-2 text-sm font-bold text-gray-400">{formatCurrency(item.price)}</td>
-                  <td className="text-right py-8 px-2 font-black text-gray-900 text-xl tracking-tighter">{formatCurrency(item.amount)}</td>
+                  <td className="text-right py-8 px-2 text-sm font-bold text-gray-900">{item.quantity}</td>
+                  <td className="text-right py-8 px-2 text-sm font-bold text-gray-400">{formatCurrency(item.price, invoice.currency)}</td>
+                  <td className="text-right py-8 px-2 font-black text-gray-900 text-xl tracking-tighter">{formatCurrency(item.amount, invoice.currency)}</td>
                 </tr>
               ))}
             </tbody>
@@ -209,18 +209,18 @@ export function ModernTemplate({ invoice }: TemplateProps) {
             <div className="space-y-3 px-8">
               <div className="flex justify-between items-center">
                 <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">Base Cost</span>
-                <span className="text-sm font-black text-gray-900">{formatCurrency(invoice.subtotal || 0)}</span>
+                <span className="text-sm font-black text-gray-900">{formatCurrency(invoice.subtotal || 0, invoice.currency)}</span>
               </div>
               {invoice.taxAmount! > 0 && (
                 <div className="flex justify-between items-center">
                   <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">Tax (VAT)</span>
-                  <span className="text-sm font-black text-gray-900">{formatCurrency(invoice.taxAmount || 0)}</span>
+                  <span className="text-sm font-black text-gray-900">{formatCurrency(invoice.taxAmount || 0, invoice.currency)}</span>
                 </div>
               )}
               {invoice.discountAmount! > 0 && (
                 <div className="flex justify-between items-center text-rose-500">
                   <span className="text-[10px] font-black uppercase tracking-widest">Mark Down</span>
-                  <span className="text-sm font-black">-{formatCurrency(invoice.discountAmount || 0)}</span>
+                  <span className="text-sm font-black">-{formatCurrency(invoice.discountAmount || 0, invoice.currency)}</span>
                 </div>
               )}
             </div>
@@ -232,7 +232,7 @@ export function ModernTemplate({ invoice }: TemplateProps) {
                 <div>
                   <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] block mb-1">Total Due</span>
                   <span className="text-4xl font-black text-gray-900 tracking-tighter">
-                    {formatCurrency(invoice.totalAmount || 0)}
+                    {formatCurrency(invoice.totalAmount || 0, invoice.currency)}
                   </span>
                 </div>
                 <div className="text-right">

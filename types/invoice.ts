@@ -28,6 +28,7 @@ export interface ClientDetails {
 export interface Invoice {
   id?: string;
   invoiceNumber: string;
+  currency: string;
   company: CompanyDetails;
   client: ClientDetails;
   invoiceDate: string;
@@ -62,6 +63,7 @@ export interface InvoiceFormData {
   dueDate?: string;
   items: InvoiceItem[];
   discountAmount: number;
+  currency: string;
   notes?: string;
   terms?: string;
   template: InvoiceTemplate;

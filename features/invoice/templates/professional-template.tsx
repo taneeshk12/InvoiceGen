@@ -159,15 +159,15 @@ export function ProfessionalTemplate({ invoice }: TemplateProps) {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 border-b border-slate-200">
-              {invoice.items?.map((item, index) => (
-                <tr key={item.id} className="group transition-colors hover:bg-slate-50">
+              {invoice.items?.map((item) => (
+                <tr key={item.id} className="group hover:bg-slate-50/50 transition-colors">
                   <td className="py-6 px-6">
-                    <div className="font-bold text-slate-900">{item.name}</div>
-                    {item.description && <div className="text-xs text-slate-400 mt-1 max-w-md">{item.description}</div>}
+                    <p className="font-bold text-slate-900 leading-tight mb-1">{item.name}</p>
+                    <p className="text-sm text-slate-500 line-clamp-2">{item.description}</p>
                   </td>
-                  <td className="text-center py-6 px-6 text-slate-600 font-medium">{item.quantity}</td>
-                  <td className="text-right py-6 px-6 text-slate-600 font-medium">{formatCurrency(item.price)}</td>
-                  <td className="text-right py-6 px-6 font-bold text-slate-900 text-base">{formatCurrency(item.amount)}</td>
+                  <td className="text-right py-6 px-6 text-slate-600 font-medium">{item.quantity}</td>
+                  <td className="text-right py-6 px-6 text-slate-600 font-medium">{formatCurrency(item.price, invoice.currency)}</td>
+                  <td className="text-right py-6 px-6 font-bold text-slate-900 text-base">{formatCurrency(item.amount, invoice.currency)}</td>
                 </tr>
               ))}
             </tbody>
@@ -192,26 +192,26 @@ export function ProfessionalTemplate({ invoice }: TemplateProps) {
           </div>
 
           <div className="flex justify-end pt-4">
-            <div className="w-full max-w-[320px] space-y-4">
-              <div className="flex justify-between items-center text-sm font-semibold text-slate-500 px-2">
-                <span>Subtotal</span>
-                <span>{formatCurrency(invoice.subtotal || 0)}</span>
+            <div className="w-[320px] bg-slate-50/50 p-8 rounded-3xl border border-slate-100 space-y-4">
+              <div className="flex justify-between items-center pb-4 border-b border-slate-200/50">
+                <span className="text-slate-500 font-medium">Subtotal</span>
+                <span className="font-bold text-slate-900">{formatCurrency(invoice.subtotal || 0, invoice.currency)}</span>
               </div>
               {invoice.taxAmount! > 0 && (
-                <div className="flex justify-between items-center text-sm font-semibold text-slate-500 px-2">
-                  <span>Tax Total</span>
-                  <span>{formatCurrency(invoice.taxAmount || 0)}</span>
+                <div className="flex justify-between items-center pb-4 border-b border-slate-200/50">
+                  <span className="text-slate-500 font-medium">Tax</span>
+                  <span className="font-bold text-slate-900">{formatCurrency(invoice.taxAmount || 0, invoice.currency)}</span>
                 </div>
               )}
               {invoice.discountAmount! > 0 && (
-                <div className="flex justify-between items-center text-sm font-semibold text-rose-500 px-2">
-                  <span>Discount</span>
-                  <span>-{formatCurrency(invoice.discountAmount || 0)}</span>
+                <div className="flex justify-between items-center pb-4 border-b border-slate-200/50">
+                  <span className="font-medium text-emerald-600">Discount</span>
+                  <span className="font-bold text-emerald-600">-{formatCurrency(invoice.discountAmount || 0, invoice.currency)}</span>
                 </div>
               )}
-              <div className="bg-slate-900 p-6 rounded-xl flex justify-between items-center shadow-lg transform translate-y-2">
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em]">Total Amount</span>
-                <span className="text-2xl font-bold text-white tracking-tight">{formatCurrency(invoice.totalAmount || 0)}</span>
+              <div className="flex justify-between items-center pt-2">
+                <span className="text-slate-900 font-black text-xl uppercase tracking-tighter">Total</span>
+                <span className="text-3xl font-black text-slate-900 tracking-tighter">{formatCurrency(invoice.totalAmount || 0, invoice.currency)}</span>
               </div>
             </div>
           </div>
