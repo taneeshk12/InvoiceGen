@@ -20,6 +20,7 @@ interface InvoiceStore {
   removeItem: (index: number) => void;
   setInvoiceDate: (date: string) => void;
   setDueDate: (date: string) => void;
+  setInvoiceNumber: (invoiceNumber: string) => void;
   setCurrency: (currency: string) => void;
   setDiscount: (amount: number) => void;
   setNotes: (notes: string) => void;
@@ -140,6 +141,12 @@ export const useInvoiceStore = create<InvoiceStore>()(
       setDueDate: (dueDate) => {
         set((state) => ({
           invoice: { ...state.invoice, dueDate },
+        }));
+      },
+
+      setInvoiceNumber: (invoiceNumber) => {
+        set((state) => ({
+          invoice: { ...state.invoice, invoiceNumber },
         }));
       },
 

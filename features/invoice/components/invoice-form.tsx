@@ -10,7 +10,7 @@ import { Plus, X, Upload } from 'lucide-react';
 import { useState } from 'react';
 
 export function InvoiceForm() {
-  const { invoice, setCompanyDetails, setClientDetails, addItem, updateItem, removeItem, setInvoiceDate, setDueDate, setCurrency, setDiscount, setNotes, setTerms } = useInvoiceStore();
+  const { invoice, setCompanyDetails, setClientDetails, addItem, updateItem, removeItem, setInvoiceDate, setDueDate, setInvoiceNumber, setCurrency, setDiscount, setNotes, setTerms } = useInvoiceStore();
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -179,6 +179,15 @@ export function InvoiceForm() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
+            <div className="col-span-2">
+              <Label htmlFor="invoice-number">Invoice Number</Label>
+              <Input
+                id="invoice-number"
+                value={invoice.invoiceNumber || ''}
+                onChange={(e) => setInvoiceNumber(e.target.value)}
+                placeholder="INV-2024-001"
+              />
+            </div>
             <div>
               <Label htmlFor="invoice-date">Invoice Date</Label>
               <Input
